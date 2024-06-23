@@ -43,7 +43,7 @@ class Student(User):
 
 class Lecturer(User):
     pass
-
+ 
 class Admin(User):
     pass
 

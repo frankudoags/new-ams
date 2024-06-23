@@ -61,3 +61,21 @@ def student_guard(current_user = Depends(get_current_user)):
     #         status_code=status.HTTP_401_UNAUTHORIZED,
     #         detail="You are not authorized to perform this operation."
     #     )
+
+
+def get_current_student():
+    return models.Student(
+        id=3,
+        name="Udoagwa Franklin",
+        email="frankudoags@gmail.com",
+        role="STUDENT",
+        matric_no="170403046"
+    )
+
+def get_current_lecturer():
+    return models.Lecturer(
+        id=2,
+        name="Dr Alexander Okandeji",
+        email="alexokandeji@gmail.com",
+        role="LECTURER"
+    )

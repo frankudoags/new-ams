@@ -34,23 +34,13 @@ def get_student_courses(db: Session, student_id: int):
     student = db.query(models.Student).filter(models.Student.id == student_id).first()
     return student.courses
 
-def get_student_attendance(db: Session, student_id: int):
-    attendance_records = (
-        db.query(models.Attendance)
-        .join(models.Course, models.Attendance.course_id == models.Course.id)
-        .filter(models.Attendance.student_id == student_id)
-        .all()
-    )
+def get_student_attendance(db: Session, student_id: int, course_id: int):
+    student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    course = db.query(models.Course).filter(models.Course.id == course_id).first()
+    if not course or not student:
+        return None, "Course or Student not found."
 
-    attendance = []
-
-    for record in attendance_records:
-        attendance.append(
-            {
-                "course": record.name,
-                "date": record.timestamp,
-                "present": record.present,
-            }
-        )
-
+    attendance = db.query(models.Attendance).filter(
+        models.Attendance.course_id == course_id, models.Attendance.student_id == student_id
+    ).all()
     return attendance

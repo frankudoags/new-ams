@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 from app.core.db import Base
-
+import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -57,8 +57,8 @@ class CourseStudent(Base):
 class Attendance(Base):
     __tablename__ = "attendance"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     course_id = Column(ForeignKey("courses.id"), nullable=False)
     student_id = Column(ForeignKey("students.id"), nullable=False)
-    timestamp = Column(DateTime, nullable=False)
+    timestamp = Column(DateTime, nullable=False)   # Time the attendance was marked
     present = Column(Boolean, nullable=False, default=False)  # True if student was present, False otherwise
