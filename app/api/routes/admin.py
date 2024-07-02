@@ -1,4 +1,11 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, File, HTTPException, status, Depends, UploadFile
+import json
+from face_recognition import (
+    load_image_file,
+    face_encodings,
+    compare_faces,
+    face_locations,
+)
 from app.core.db import db_dependency
 from app.core.security import admin_guard
 from app import schemas, models
@@ -8,6 +15,8 @@ from app.services.admin import (
     create_new_lecturer,
     create_new_course,
 )
+from app.utils import get_face_encodings
+
 
 router = APIRouter(dependencies=[Depends(admin_guard)])
 
@@ -82,3 +91,9 @@ async def get_students(db: db_dependency):
 async def get_courses(db: db_dependency):
     courses = db.query(models.Course).all()
     return courses
+
+
+@router.post("/encode_face")
+async def encode_face(file: UploadFile = File(...)):
+    face = await get_face_encodings(file)
+    return face

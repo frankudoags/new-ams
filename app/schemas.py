@@ -40,6 +40,9 @@ class User(BaseModel):
 class Student(User):
     matric_no: str
 
+class StudentWithFaceEncoding(Student):
+    face_encoding: str
+
 
 class Lecturer(User):
     pass
