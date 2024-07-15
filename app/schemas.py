@@ -41,7 +41,7 @@ class Student(User):
     matric_no: str
 
 class StudentWithFaceEncoding(Student):
-    face_encoding: str
+    facial_encoding: str
 
 
 class Lecturer(User):
@@ -57,3 +57,11 @@ class Course(BaseModel):
     lecturer_id: int
     lecturer: Lecturer
     students: List[Student]
+
+
+class CourseData(BaseModel):
+    id: int
+    name: str
+    code: str
+    lecturer_id: int
+    lecturer: Lecturer

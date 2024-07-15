@@ -7,6 +7,8 @@ from face_recognition import (
 )
 from fastapi import UploadFile
 from app.schemas import StudentWithFaceEncoding
+from typing import List
+
 
 async def get_face_encodings(file: UploadFile):
     image = load_image_file(file.file)
@@ -15,19 +17,28 @@ async def get_face_encodings(file: UploadFile):
     return face_encoding
 
 
-async def check_face(file: UploadFile, students: list[StudentWithFaceEncoding]):
+async def check_face(file: UploadFile, students: List[StudentWithFaceEncoding]):
     image = load_image_file(file.file)
     boxes = face_locations(image, model="hog")
-    face_encoding = face_encodings(image, boxes)
+    face_encodings_list = face_encodings(image, boxes)
 
-    found = False
-    student = None
+    if not face_encodings_list:
+        return False, None
+
+    face_encoding = face_encodings_list[0]
+
+    known_faces = []
 
     for student in students:
-        student_encoding = json.loads(student.face_encoding)
-        if compare_faces(student_encoding, face_encoding)[0]:
-            found = True
-            student = student
-            break
-    
-    return found, student
+        student_encoding = json.loads(student.facial_encoding)
+        known_faces.append(student_encoding)
+
+
+    matches = compare_faces(known_faces, face_encoding, 0.4)
+    print(matches)
+    if True in matches:
+        match_index = matches.index(True)
+        student = students[match_index]
+        return True, student
+
+    return False, None

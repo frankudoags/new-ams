@@ -21,7 +21,7 @@ async def read_student_profile(
 
 
 @router.get(
-    "/courses", response_model=List[schemas.Course], status_code=status.HTTP_200_OK
+    "/courses", response_model=List[schemas.CourseData], status_code=status.HTTP_200_OK
 )
 async def read_student_courses(
     db: db_dependency,

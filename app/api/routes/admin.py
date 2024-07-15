@@ -1,11 +1,5 @@
-from fastapi import APIRouter, File, HTTPException, status, Depends, UploadFile
-import json
-from face_recognition import (
-    load_image_file,
-    face_encodings,
-    compare_faces,
-    face_locations,
-)
+from fastapi import APIRouter, File, HTTPException, status, Depends, UploadFile, Form
+from typing import Annotated
 from app.core.db import db_dependency
 from app.core.security import admin_guard
 from app import schemas, models
@@ -37,8 +31,16 @@ async def create_admin(admin: schemas.CreateAdmin, db: db_dependency):
     response_model=schemas.Student,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_student(student: schemas.CreateStudent, db: db_dependency):
-    student = create_new_student(db, student)
+async def create_student(
+    db: db_dependency,
+    face: Annotated[UploadFile, File()],
+    name: Annotated[str, Form(...)],
+    email: Annotated[str, Form(...)],
+    password: Annotated[str, Form(...)],
+    matric_no: Annotated[str, Form(...)],
+):
+    facial_encoding = await get_face_encodings(face)
+    student = create_new_student(db, name, email, password, matric_no, facial_encoding)
     if not student:
         raise HTTPException(status_code=400, detail="Student creation failed.")
 

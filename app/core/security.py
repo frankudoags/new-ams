@@ -15,7 +15,7 @@ SECRET_KEY = "ff0b4ab3e2b00da6d35d1ae2fec6de76468c861b"
 
 
 # def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
-#     expire = datetime.now(datetime.UTC) + expires_delta
+#     expire = datetime.now() + expires_delta
 #     to_encode = {"exp": expire, "sub": str(subject)}
 #     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 #     return encoded_jwt
@@ -36,7 +36,6 @@ def get_current_user() -> models.User:
         email="test@gmail.com",
         role="ADMIN"
     )
-
 
 
 def admin_guard(current_user = Depends(get_current_user)):
@@ -65,14 +64,14 @@ def student_guard(current_user = Depends(get_current_user)):
 
 def get_current_student():
     return models.Student(
-        id=3,
+        id=7,
         name="Udoagwa Franklin",
         email="frankudoags@gmail.com",
         role="STUDENT",
         matric_no="170403046"
     )
 
-def get_current_lecturer():
+def get_current_lecturer() -> models.Lecturer:
     return models.Lecturer(
         id=2,
         name="Dr Alexander Okandeji",

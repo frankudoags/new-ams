@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from app.core.security import lecturer_guard, get_current_lecturer
-from app import schemas
+from app import models, schemas
 from app.core.db import db_dependency
 from app.services.lecturer import (
     view_lecturer_courses,
     create_attendance_session,
     mark_attendance,
 )
+from app.utils import check_face
 
 router = APIRouter(dependencies=[Depends(lecturer_guard)])
 
@@ -51,14 +53,23 @@ async def create_session(
 @router.post(
     "/mark_attendance",
     status_code=status.HTTP_201_CREATED,
+    response_model=schemas.Student,
 )
 async def mark_student_attendance(
-    course_id: int,
-    student_id: int,
     db: db_dependency,
+    face: Annotated[UploadFile, File(...)],
+    course_id: Annotated[int, Form(...)],
 ):
-    attendance = mark_attendance(db, course_id, student_id)
-    if not attendance:
-        raise HTTPException(status_code=400, detail="Attendance marking failed.")
+    course = db.query(models.Course).filter(models.Course.id == course_id).first()
+    students = course.students
+    found, student = await check_face(face, students)
 
-    return attendance
+    if not found:
+        raise HTTPException(status_code=400, detail="Student not recognized.")
+
+    return student
+    # attendance = mark_attendance(db, course_id, student_id)
+    # if not attendance:
+    #     raise HTTPException(status_code=400, detail="Attendance marking failed.")
+
+    # return attendance
