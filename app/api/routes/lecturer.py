@@ -7,6 +7,7 @@ from app.services.lecturer import (
     view_lecturer_courses,
     create_attendance_session,
     mark_attendance,
+    get_students_for_course,
 )
 from app.utils import check_face
 
@@ -30,6 +31,19 @@ async def read_lecturer_courses(
     current_user=Depends(get_current_lecturer),
 ):
     return view_lecturer_courses(db, current_user.id)
+
+
+@router.get(
+    "/get_students_for_a_course",
+    status_code=status.HTTP_200_OK,
+    response_model=list[schemas.Student],
+)
+async def get_course_students(
+    course_id: int,
+    db: db_dependency,
+):
+    students = get_students_for_course(db, course_id)
+    return students
 
 
 @router.post(

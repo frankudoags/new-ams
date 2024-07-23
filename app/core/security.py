@@ -64,7 +64,7 @@ def student_guard(current_user = Depends(get_current_user)):
 
 def get_current_student():
     return models.Student(
-        id=7,
+        id=3,
         name="Udoagwa Franklin",
         email="frankudoags@gmail.com",
         role="STUDENT",

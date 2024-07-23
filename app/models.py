@@ -62,3 +62,4 @@ class Attendance(Base):
     student_id = Column(ForeignKey("students.id"), nullable=False)
     timestamp = Column(DateTime, nullable=False)   # Time the attendance was marked
     present = Column(Boolean, nullable=False, default=False)  # True if student was present, False otherwise
+

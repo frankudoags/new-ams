@@ -48,3 +48,8 @@ def mark_attendance(db: Session, course_id: int, student_id: int):
         return attendance
     else:
         return None
+
+
+def get_students_for_course(db: Session, course_id: int):
+    course = db.query(models.Course).filter(models.Course.id == course_id).first()
+    return course.students
