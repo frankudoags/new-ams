@@ -40,6 +40,9 @@ class User(BaseModel):
 class Student(User):
     matric_no: str
 
+class StudentWithAttendance(Student):
+    attendance_level: int
+
 class StudentWithFaceEncoding(Student):
     facial_encoding: str
 

@@ -6,8 +6,8 @@ from app.core.db import db_dependency
 from app.services.lecturer import (
     view_lecturer_courses,
     create_attendance_session,
-    mark_attendance,
     get_students_for_course,
+    get_course_attendance_no_of_students_present_for_each_class_and_no_of_classes_held as gcs
 )
 from app.utils import check_face
 
@@ -36,7 +36,7 @@ async def read_lecturer_courses(
 @router.get(
     "/get_students_for_a_course",
     status_code=status.HTTP_200_OK,
-    response_model=list[schemas.Student],
+    response_model=list[schemas.StudentWithAttendance],
 )
 async def get_course_students(
     course_id: int,
@@ -45,6 +45,16 @@ async def get_course_students(
     students = get_students_for_course(db, course_id)
     return students
 
+@router.get(
+        "/get_course_session_details",
+        status_code=status.HTTP_200_OK
+)
+
+async def get_course_session_details(
+    course_id: int,
+    db: db_dependency,
+):
+    return gcs(db, course_id)
 
 @router.post(
     "/create_session",
