@@ -93,9 +93,3 @@ async def get_students(db: db_dependency):
 async def get_courses(db: db_dependency):
     courses = db.query(models.Course).all()
     return courses
-
-
-@router.post("/encode_face")
-async def encode_face(file: UploadFile = File(...)):
-    face = await get_face_encodings(file)
-    return face

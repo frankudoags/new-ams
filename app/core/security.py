@@ -15,7 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ALGORITHM = "HS256"
 SECRET_KEY = "ff0b4ab3e2b00da6d35d1ae2fec6de76468c861b"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 3000 #change to 30 mins, used 3000 mins for testing
 
 
 def create_access_token(data: dict, expires_delta: timedelta = None):

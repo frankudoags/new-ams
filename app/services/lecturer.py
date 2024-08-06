@@ -36,20 +36,17 @@ def create_attendance_session(db: Session, course_id: int) -> None:
     return True
 
 
-def mark_attendance(db: Session, course_id: int, student_id: int):
+def mark_attendance(db: Session, course_id: int, student_id: int, class_date: str):
+    class_date_obj = datetime.datetime.fromisoformat(class_date)
+
     attendance = (
-        db.query(models.Attendance)  # Get the attendance table
-        .filter(
-            models.Attendance.course_id == course_id
-        )  # Get the attendance record for the course
-        .filter(
-            models.Attendance.student_id == student_id
-        )  # Get the attendance record for the student
-        .order_by(
-            models.Attendance.timestamp.desc()
-        )  # Get the latest attendance session
+        db.query(models.Attendance)
+        .filter(models.Attendance.course_id == course_id)
+        .filter(models.Attendance.student_id == student_id)
+        .filter(func.date(models.Attendance.timestamp) == class_date_obj.date())
         .first()
     )
+
     if attendance:
         attendance.present = True
         db.commit()

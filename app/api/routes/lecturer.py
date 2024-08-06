@@ -4,6 +4,7 @@ from app.core.security import lecturer_guard, get_current_lecturer
 from app import models, schemas
 from app.core.db import db_dependency
 from app.services.lecturer import (
+    mark_attendance,
     view_lecturer_courses,
     create_attendance_session,
     get_students_for_course,
@@ -58,7 +59,7 @@ async def get_course_session_details(
 
 @router.post(
     "/create_session",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
 )
 async def create_session(
     course_id: int,
@@ -76,24 +77,26 @@ async def create_session(
 
 @router.post(
     "/mark_attendance",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
     response_model=schemas.Student,
 )
 async def mark_student_attendance(
     db: db_dependency,
     face: Annotated[UploadFile, File(...)],
     course_id: Annotated[int, Form(...)],
+    class_date: Annotated[str, Form(...)],
 ):
     course = db.query(models.Course).filter(models.Course.id == course_id).first()
     students = course.students
     found, student = await check_face(face, students)
 
-    if not found:
+    if not found or not student:
         raise HTTPException(status_code=400, detail="Student not recognized.")
+    
+    id = student.id
+
+    attendance = mark_attendance(db, course_id, id, class_date)
+    if not attendance:
+        raise HTTPException(status_code=400, detail="Attendance marking failed. check me")
 
     return student
-    # attendance = mark_attendance(db, course_id, student_id)
-    # if not attendance:
-    #     raise HTTPException(status_code=400, detail="Attendance marking failed.")
-
-    # return attendance
