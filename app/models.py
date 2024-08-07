@@ -58,8 +58,8 @@ class Attendance(Base):
     __tablename__ = "attendance"
 
     id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, nullable=False)   # Time the attendance was marked
+    title = Column(String, nullable=False)
     course_id = Column(ForeignKey("courses.id"), nullable=False)
     student_id = Column(ForeignKey("students.id"), nullable=False)
-    timestamp = Column(DateTime, nullable=False)   # Time the attendance was marked
     present = Column(Boolean, nullable=False, default=False)  # True if student was present, False otherwise
-

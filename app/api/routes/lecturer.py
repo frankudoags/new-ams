@@ -8,7 +8,7 @@ from app.services.lecturer import (
     view_lecturer_courses,
     create_attendance_session,
     get_students_for_course,
-    get_course_attendance_no_of_students_present_for_each_class_and_no_of_classes_held as gcs
+    get_course_attendance_no_of_students_present_for_each_class_and_no_of_classes_held as gcs,
 )
 from app.utils import check_face
 
@@ -46,16 +46,14 @@ async def get_course_students(
     students = get_students_for_course(db, course_id)
     return students
 
-@router.get(
-        "/get_course_session_details",
-        status_code=status.HTTP_200_OK
-)
 
+@router.get("/get_course_session_details", status_code=status.HTTP_200_OK)
 async def get_course_session_details(
     course_id: int,
     db: db_dependency,
 ):
     return gcs(db, course_id)
+
 
 @router.post(
     "/create_session",
@@ -63,9 +61,10 @@ async def get_course_session_details(
 )
 async def create_session(
     course_id: int,
+    title: str,
     db: db_dependency,
 ):
-    session = create_attendance_session(db, course_id)
+    session = create_attendance_session(db, course_id, title)
     if not session:
         raise HTTPException(status_code=400, detail="Session creation failed.")
 
@@ -78,7 +77,7 @@ async def create_session(
 @router.post(
     "/mark_attendance",
     status_code=status.HTTP_200_OK,
-    response_model=schemas.Student,
+    response_model=schemas.AttendanceStudent,
 )
 async def mark_student_attendance(
     db: db_dependency,
@@ -92,11 +91,16 @@ async def mark_student_attendance(
 
     if not found or not student:
         raise HTTPException(status_code=400, detail="Student not recognized.")
-    
+
     id = student.id
 
     attendance = mark_attendance(db, course_id, id, class_date)
     if not attendance:
-        raise HTTPException(status_code=400, detail="Attendance marking failed. check me")
+        raise HTTPException(
+            status_code=400, detail="Attendance marking failed. check me"
+        )
 
-    return student
+    student_with_attendance = schemas.AttendanceStudent(
+        name=student.name, present=attendance.present
+    )
+    return student_with_attendance

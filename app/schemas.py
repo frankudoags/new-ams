@@ -40,6 +40,10 @@ class User(BaseModel):
 class Student(User):
     matric_no: str
 
+class AttendanceStudent(BaseModel):
+    name: str
+    present: bool
+
 class StudentWithAttendance(Student):
     attendance_level: int
 
