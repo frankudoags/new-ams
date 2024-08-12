@@ -1,8 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import ARRAY
 from app.core.db import Base
-import datetime
 
 class User(Base):
     __tablename__ = "users"
